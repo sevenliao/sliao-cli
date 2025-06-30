@@ -21,6 +21,11 @@ const shell = require('shelljs');
 const {resolve} = require('path');
 const { version } = require("commander");
 
+//项目模版封装
+const { createHtml, createReact, createVue } = require("./cloneProject");
+
+
+
 const filename = `${__dirname}/package.json`;
 let versionId = 'v1.0.0'
 if(fs.existsSync(filename)){
@@ -233,125 +238,4 @@ function deleteall(path) {
     fs.rmdirSync(path);
   }
 };
-
-// THML 模板
-function createHtml (__dirname, answers,name){
-  // 模板目录
-  const tmlDir = path.join(__dirname, "templates");
-  // 目标目录
-  const destDir = process.cwd()+'/'+ name;
-  // 读取模板文件,将模板下的文件全部转换到目标目录
-  fs.readdir(tmlDir, (err, files) => {
-    if (err) throw err;
-    fs.mkdir(name,(err)=>{
-      if(err) throw err;
-        files.forEach((file) => {
-          // console.log(file);
-          // 通过模板引擎渲染文件
-          ejs.renderFile(path.join(tmlDir, file), answers, (error, result) => {
-            if (error) throw error;
-            // console.log(result)
-            // 将结果写入模板
-            fs.writeFileSync(path.join(destDir, file), result);
-          });
-        });
-      })
-  });
-}
-
-// React 模板
-function createReact (name, answers){
-    const spinner = ora('正在下载模板……\n');
-    spinner.start();
-    //可使用download 或者 child_process
-    url = 'https://github.com/13club/create-react-app.git'
-    const fireName = 'create-react-app';
-    child_process.exec('git clone ' + url, function (err) {
-      if (err) {
-          console.log(symbols.error, chalk.red('模板加载失败\n',err))
-          spinner.file()
-      } else {
-        spinner.succeed();
-
-        //将要移动的文件 移动到目标文件  xxx -> __dirname/<projectName>
-        //__dirname 当前模块的目录名
-        // shell你可以理解为一个类似cmd的攻击
-        shell.mv(__dirname + '/'+ fireName, __dirname + '/' + name)
-        const filename = `${fireName}/package.json`;
-        const meta = {
-          name,
-          description: answers.description,
-          author: answers.author,
-        }
-        if(fs.existsSync(filename)){
-          //读取目录文件的package文件
-          const content = fs.readFileSync(filename).toString();
-          let dt = JSON.parse(content);
-          dt.name = meta.name;
-          dt.author = meta.author;
-          dt.description = meta.description;
-          //改写package.json
-          fs.writeFile(filename,JSON.stringify(dt),'utf-8',(err) => {
-            if(err){
-              console.log('模板生成-失败(fail)，原因：',err)
-            }else{
-              console.log('模板生成-成功(success)')
-              removeTempleGitFile(fireName,name)
-            }
-          })
-          console.log(symbols.success, chalk.green('项目初始化完成'));
-        } else {
-          console.log(symbols.error, chalk.red('package不存在'));
-        }
-      }
-    })
-}
-
-// Vue 模板
-function createVue (name, answers){
-  const spinner = ora('正在下载模板……\n');
-  spinner.start();
-  //可使用download 或者 child_process
-  url = 'https://github.com/13club/create-vue-app.git'
-  let fireName = 'create-vue-app';
-  child_process.exec('git clone ' + url, function (err) {
-    if (err) {
-      console.log(symbols.error, chalk.red('模板加载失败\n',err))
-      spinner.file()
-    } else {
-      spinner.succeed();
-      //将要移动的文件 移动到目标文件  xxx -> __dirname/<projectName>
-      //__dirname 当前模块的目录名
-      // shell你可以理解为一个类似cmd的攻击
-      shell.mv(__dirname + '/'+ fireName, __dirname + '/' + name)
-      const filename = `${fireName}/package.json`;
-      const meta = {
-        name,
-        description: answers.description,
-        author: answers.author,
-      }
-      if(fs.existsSync(filename)){
-        //读取目录文件的package文件
-        const content = fs.readFileSync(filename).toString();
-        let dt = JSON.parse(content);
-        dt.name = meta.name;
-        dt.author = meta.author;
-        dt.description = meta.description;
-        //改写package.json
-        fs.writeFile(filename,JSON.stringify(dt),'utf-8',(err) => {
-          if(err){
-            console.log('模板生成-失败(fail)，原因：',err)
-          }else{
-            console.log('模板生成-成功(success)')
-            removeTempleGitFile(fireName,name)
-          }
-        })
-        console.log(symbols.success, chalk.green('项目初始化完成'));
-      } else {
-        console.log(symbols.error, chalk.red('package不存在'));
-      }
-    }
-  })
-
-}
 

@@ -1,8 +1,11 @@
 {
   "name": "sliao-cli",
-  "version": "1.1.0",
+  "version": "1.4.0",
   "description": "cli test ",
-  "bin": "cli.js",
+  "main": "index.js",
+  "bin": {
+    "sliao-cli": "cli.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,6 +19,7 @@
     "commander": "^6.0.0",
     "log-symbols": "^4.0.0",
     "ora": "^4.0.5",
-    "shelljs": "^0.8.4"
+    "shelljs": "^0.8.4",
+    "download-git-repo": "^3.0.2"
   }
 }

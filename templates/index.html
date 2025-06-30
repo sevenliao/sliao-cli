@@ -8,7 +8,87 @@
         <link rel="stylesheet" href="./index.css">
     </head>
     <body>
-        <div><%= name %></div>
+        <div id="app">
+            <div>
+                <h5>初始化数据 </h5>
+                <p>{{title}}</p>
+            </div>
+            <hr>
+    
+            <div>
+                <h5>赋值方式</h5>
+                <p>方法1：插值绑定: </p>
+                <!-- 插值绑定 -->
+                <text>{{name}}</text>
+       
+                <p>方法2：指令系统:</p>
+                <!-- 指令系统 -->
+                <div s-text="name"></div>
+            </div>
+            <hr>
+    
+            <div>
+                <h5>双向绑定:</h5>
+                <!-- 双向绑定 -->
+                <input type="text" s-model="name">
+            </div>
+            <hr>
+    
+            <div>
+                <h5>事件处理:</h5>
+                <!-- 事件处理 -->
+                <input type="text" s-model="btnText" disabled><button @click="changeName">提 交</button>
+            </div>
+            <hr>
+    
+            <div>
+                <h5>html内容解析:</h5>
+                <!-- html内容解析 -->
+                <div s-html="html"></div>
+            </div>
+            <hr>
+    
+            <div>
+                <h5>数组遍历</h5>
+                <!-- 数组遍历 -->
+                <ul>
+                    <li s-for="arrData|value"></li>
+                </ul>
+            </div>
+            <hr>
+    
+        </div>
+        <script src='http://www.sevenliao.cn/svue/cdn/svue-mins.js'></script>
+        <script>
+            new SVue({
+                el: '#app',
+                data: {
+                    name: "test",
+                    title: 'hello world！',
+                    btnText: '静态test数据',
+                    html: '<button>动态一个按钮</button>',
+                    arrData: [
+                        {
+                            key: 'key1',
+                            value: 'val1'
+                        },
+                        {
+                            key: 'key2',
+                            value: 'val2'
+                        },
+                    ]
+                },
+                created() {
+                    console.log('初始化函数');
+                },
+                methods: {
+                    changeName() {
+                        this.name = this.btnText;
+                        this.title = 'yes';
+                    }
+                }
+            })
+        </script>
     </body>
 
 </html>
