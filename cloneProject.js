@@ -10,9 +10,15 @@ const ora = require('ora')
 const symbols = require('log-symbols');
 //chlid_process 创建异步进程（子进程） exec传递的是 command 或 可执行文件
 const child_process = require('child_process');
+const { execSync } = require('child_process');
 //shell 做的事就是自动化，从耗时的重复性常规动作里解放处理
 const shell = require('shelljs');
 const {resolve} = require('path');
+
+
+//静态文案
+const { downloading, stoppedMsg } = require("./language");
+
 
 // THML 模板
 function createHtml (__dirname, answers,name){
@@ -35,20 +41,41 @@ function createHtml (__dirname, answers,name){
             fs.writeFileSync(path.join(destDir, file), result);
           });
         });
+        console.log('create a svue html templates');
       })
   });
 }
 
+// React 初始化项目
+function createInitReact (name, answers){
+    const spinner = ora(downloading);
+    spinner.start();
+    //可使用download 或者 child_process
+    const appName = 'my-react-app'; // 自定义应用名称
+    const projectPath = path.join(__dirname, appName);
+    try {
+      console.log('Creating React application...');
+      execSync(`npx create-react-app ${appName}`, { stdio: 'inherit' });
+      console.log(`Create React application success! path: ${projectPath}`);
+      spinner.succeed();
+    } catch (error) {
+      // console.error('创建失败:', error.message);
+      console.log(symbols.error, chalk.red('create fail\n',error.message))
+      spinner.file()
+    }
+}
 // React 模板
 function createReact (name, answers){
-    const spinner = ora('正在下载模板……\n');
+    const spinner = ora(downloading);
+    
     spinner.start();
     //可使用download 或者 child_process
     url = 'https://github.com/13club/create-react-app.git'
     const fireName = 'create-react-app';
     child_process.exec('git clone ' + url, function (err) {
       if (err) {
-          console.log(symbols.error, chalk.red('模板加载失败\n',err))
+          console.log(symbols.error, chalk.red('Template loading failed\n',err))
+          console.log(symbols.error, chalk.red(stoppedMsg))
           spinner.file()
       } else {
         spinner.succeed();
@@ -73,15 +100,15 @@ function createReact (name, answers){
           //改写package.json
           fs.writeFile(filename,JSON.stringify(dt),'utf-8',(err) => {
             if(err){
-              console.log('模板生成-失败(fail)，原因：',err)
+              console.log('Template create -失败(fail)，reason：',err)
             }else{
-              console.log('模板生成-成功(success)')
+              console.log('Template create-成功(success)')
               removeTempleGitFile(fireName,name)
             }
           })
-          console.log(symbols.success, chalk.green('项目初始化完成'));
+          console.log(symbols.success, chalk.green('Project initialization completed'));
         } else {
-          console.log(symbols.error, chalk.red('package不存在'));
+          console.log(symbols.error, chalk.red('package 不存在(not exist)'));
         }
       }
     })
@@ -89,14 +116,15 @@ function createReact (name, answers){
 
 // Vue 模板
 function createVue (name, answers){
-  const spinner = ora('正在下载模板……\n');
+  const spinner = ora(downloading);
   spinner.start();
   //可使用download 或者 child_process
   url = 'https://github.com/13club/create-vue-app.git'
   let fireName = 'create-vue-app';
   child_process.exec('git clone ' + url, function (err) {
     if (err) {
-      console.log(symbols.error, chalk.red('模板加载失败\n',err))
+      console.log(symbols.error, chalk.red('Template loading failed\n',err))
+      console.log(symbols.error, chalk.red(stoppedMsg))
       spinner.file()
     } else {
       spinner.succeed();
@@ -120,19 +148,48 @@ function createVue (name, answers){
         //改写package.json
         fs.writeFile(filename,JSON.stringify(dt),'utf-8',(err) => {
           if(err){
-            console.log('模板生成-失败(fail)，原因：',err)
+            console.log('Template create-失败(fail)，原因：',err)
           }else{
-            console.log('模板生成-成功(success)')
+            console.log('Template create-成功(success)')
             removeTempleGitFile(fireName,name)
           }
         })
-        console.log(symbols.success, chalk.green('项目初始化完成'));
+        console.log(symbols.success, chalk.green('Project initialization completed'));
       } else {
-        console.log(symbols.error, chalk.red('package不存在'));
+        console.log(symbols.error, chalk.red('package 不存在(not exist)'));
       }
     }
   })
 
+}
+
+// create-vite a project
+function createViteProject (name, answers){
+    const spinner = ora(downloading);
+    spinner.start();
+    //可使用download 或者 child_process
+    const appName = 'my-app'; // 自定义应用名称
+    const projectPath = path.join(__dirname, appName);
+    // const isTypeScript = answers.template.includes('TypeScript') ? 'vue-ts' : 'vue';
+    try {
+      console.log('Creating my-app application...');
+      execSync(
+        `npx create-vite@latest ${appName} -- --template`,
+        { stdio: "inherit" } // 显示命令输出
+      );
+      // execSync(
+      //   `npx create-vite@latest ${appName} -- --template ${
+      //     isTypeScript
+      //   }`,
+      //   { stdio: "inherit" } // 显示命令输出
+      // );
+      console.log(`[my-app] Application created successfully！path: ${projectPath}`);
+      spinner.succeed();
+    } catch (error) {
+      // console.error('创建失败:', error.message);
+      console.log(symbols.error, chalk.red('create fial\n',error.message))
+      spinner.file()
+    }
 }
 
 // 获取.git文件
@@ -187,5 +244,7 @@ function deleteall(path) {
 module.exports = {
   createHtml,
   createReact,
-  createVue
+  createVue,
+  createInitReact,
+  createViteProject
 }

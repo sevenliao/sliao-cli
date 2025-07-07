@@ -22,7 +22,7 @@ const {resolve} = require('path');
 const { version } = require("commander");
 
 //项目模版封装
-const { createHtml, createReact, createVue } = require("./cloneProject");
+const { createHtml, createReact, createVue, createInitReact, createViteProject } = require("./cloneProject");
 
 
 
@@ -59,6 +59,8 @@ program.version(chalk.green('======Dark,sliao-cli====== \n  version: '+versionId
               { value: 1, name: 'Template type: Html' },
               { value: 2, name: 'Template type: React' },
               { value: 3, name: 'Template type: Vue' },
+              { value: 4, name: 'Init a React Project' },
+              { value: 5, name: 'Create-vite a Project(react、vue……)' },
             ]
           },
           {
@@ -89,6 +91,12 @@ program.version(chalk.green('======Dark,sliao-cli====== \n  version: '+versionId
               break;
             case 3:
               createVue(name, answers)
+              break;
+            case 4:
+              createInitReact(name, answers)
+              break;
+            case 5:
+              createViteProject(name, answers)
               break;
               default:
                 console.log(chalk.magentaBright('请选择一个类型模板，重试(Please select a type template and try again)'));
